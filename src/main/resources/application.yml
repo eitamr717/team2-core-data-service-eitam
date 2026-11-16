@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: team2-core-data-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/therapy_core_db}
+    username: ${DB_USER:therapy_user}
+    password: ${DB_PASSWORD:therapy_dev_password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+app:
+  security:
+    # 32-byte Base64 AES-256 key for field-level encryption at rest (override in production via env var)
+    encryption-key: ${DATA_ENCRYPTION_KEY:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+    jwt-secret: ${JWT_SECRET:dGVhbTItc2VjcmV0LWtleS1mb3Itand0LXNpZ25pbmctbXVzdC1iZS1hdC1sZWFzdC0yNTYtYml0cw==}
+    jwt-expiration-ms: 3600000
+    internal-service-key: ${INTERNAL_SERVICE_API_KEY:team2-internal-secret-key-dev}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
