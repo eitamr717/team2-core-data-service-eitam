@@ -1,0 +1,5 @@
+Before writing or modifying any code in this repository, you MUST read and strictly follow:
+1. AGENTS.md
+2. docs/AGENT_SYNC_CONTRACT.md (Mandatory Java class, field, and method signatures across all 9 team Issues)
+3. docs/TEAM2_SPEC.md (Exact JSON schemas for Contract 1 & Contract 5)
+4. docs/ISSUES_TASKS.md (File ownership per Issue)
