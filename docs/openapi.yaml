@@ -1,0 +1,393 @@
+openapi: 3.0.3
+info:
+  title: Team 2 – Core CRUD & Data Service API
+  version: 1.0.0
+  description: |
+    Official API Contract for Team 2 (Core CRUD & Data Service).
+    - **Contract 1 (`/api/v1/**`)**: Back Office REST API for Team 1 (Therapist React + Vite Frontend). Secured via `Bearer <JWT>`.
+    - **Contract 5 (`/internal/api/v1/**`)**: Internal Service-to-Service REST API for Team 3 (AI Engine) & Team 5 (Real-Time Orchestrator). Secured via `X-Internal-Service-Key`.
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    internalServiceKey:
+      type: apiKey
+      in: header
+      name: X-Internal-Service-Key
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: "therapist@clinic.co.il" }
+        password: { type: string, example: "Password123!" }
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken: { type: string }
+        tokenType: { type: string, example: "Bearer" }
+        expiresIn: { type: integer, example: 3600 }
+        therapist:
+          $ref: '#/components/schemas/TherapistProfileDto'
+
+    TherapistProfileDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string, example: "ד\"ר רונית לוי" }
+        email: { type: string, format: email }
+        specialty: { type: string, example: "חרדה חברתית וקשיי ויסות" }
+
+    PatientDto:
+      type: object
+      required: [displayAlias, age]
+      properties:
+        id: { type: string, format: uuid, readOnly: true }
+        displayAlias: { type: string, example: "נועם" }
+        personalDetails: { type: string, example: "נועם כהן, כיתה ג', הופנה עקב קושי בהשתלבות חברתית" }
+        age: { type: integer, example: 8 }
+        emotionalBackground: { type: string, example: "חרדה חברתית, נטייה להימנעות ממשחקים קבוצתיים בהפסקה" }
+        interestsAndSafeTopics: { type: string, example: "חלל ואסטרונאוטים, לגו, כלבים" }
+        longTermGoals: { type: string, example: "חיזוק תחושת המסוגלות החברתית ושיתוף רגשות תסכול" }
+        therapistNotes: { type: string, example: "מגיב מצוין להומור עדין; נלחץ משאלות ישירות על ציונים." }
+        preferredCharacterIds:
+          type: array
+          items: { type: string }
+          example: ["char_astro", "char_rex"]
+
+    AnimationTriggerDto:
+      type: object
+      properties:
+        animationTriggerId: { type: string, example: "WAVE_HELLO" }
+        displayName: { type: string, example: "נפנוף לשלום" }
+        aiUsageDescription: { type: string, example: "השתמש בתחילת שיחה או בפרידה מהילד" }
+
+    CharacterDto:
+      type: object
+      properties:
+        id: { type: string, example: "char_astro" }
+        name: { type: string, example: "אסטרו החוקר מהחלל" }
+        description: { type: string, example: "דמות סקרנית, חמה ומעודדת המדברת בשפה מותאמת לילדים" }
+        unityModelAssetId: { type: string, example: "Astro3DModel" }
+        voiceConfigId: { type: string, example: "voice_astro_he_01" }
+        availableAnimations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimationTriggerDto'
+
+    SessionCreateRequestDto:
+      type: object
+      required: [patientId, characterId, sessionGoals]
+      properties:
+        patientId: { type: string, format: uuid }
+        characterId: { type: string, example: "char_astro" }
+        sessionGoals: { type: string, example: "לעודד את נועם לשתף חוויה אחת מההפסקה בבית הספר" }
+        focusTopics: { type: string, example: "משחקים משותפים בהפסקה, איך מבקשים להצטרף למשחק" }
+        sensitiveBoundaries: { type: string, example: "להימנע משאלות על אבא או על מעבר הדירה האחרון" }
+
+    TranscriptEntryDto:
+      type: object
+      required: [sequenceNumber, timestamp, speaker, content]
+      properties:
+        sequenceNumber: { type: integer, example: 1 }
+        timestamp: { type: string, format: date-time }
+        speaker:
+          type: string
+          enum: [CHILD, CHARACTER, THERAPIST_STEERING]
+        content: { type: string, example: "היי נועם! איזה כיף שנפגשנו היום!" }
+        ttsDirectives: { type: string, nullable: true, example: "שמח, נלהב" }
+        animationTriggerId: { type: string, nullable: true, example: "WAVE_HELLO" }
+
+    SessionResponseDto:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        patientId: { type: string, format: uuid }
+        characterId: { type: string }
+        status:
+          type: string
+          enum: [CREATED, ACTIVE, COMPLETED]
+        sessionGoals: { type: string }
+        focusTopics: { type: string }
+        sensitiveBoundaries: { type: string }
+        startedAt: { type: string, format: date-time, nullable: true }
+        endedAt: { type: string, format: date-time, nullable: true }
+        durationSeconds: { type: integer, format: int64, nullable: true }
+        therapistSessionNotes: { type: string, nullable: true }
+        transcript:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptEntryDto'
+
+    SessionAiContextResponseDto:
+      type: object
+      description: "Returned to Team 3 (AI) & Team 5 (Orchestrator). Strictly stripped of PII (no personalDetails or therapistNotes)."
+      properties:
+        sessionId: { type: string, format: uuid }
+        status: { type: string, example: "ACTIVE" }
+        character:
+          type: object
+          properties:
+            id: { type: string, example: "char_astro" }
+            name: { type: string }
+            voiceConfigId: { type: string }
+            unityModelAssetId: { type: string }
+            personalityProfilePrompt: { type: string }
+            availableAnimations:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimationTriggerDto'
+        patientContext:
+          type: object
+          properties:
+            displayAlias: { type: string, example: "נועם" }
+            age: { type: integer, example: 8 }
+            emotionalBackground: { type: string }
+            interestsAndSafeTopics: { type: string }
+            longTermGoals: { type: string }
+        sessionDirectives:
+          type: object
+          properties:
+            sessionGoals: { type: string }
+            focusTopics: { type: string }
+            sensitiveBoundaries: { type: string }
+
+    SessionCompleteRequestDto:
+      type: object
+      required: [startedAt, endedAt, durationSeconds, transcript]
+      properties:
+        startedAt: { type: string, format: date-time }
+        endedAt: { type: string, format: date-time }
+        durationSeconds: { type: integer, format: int64, example: 1230 }
+        aiSummary: { type: string, nullable: true }
+        transcript:
+          type: array
+          items:
+            $ref: '#/components/schemas/TranscriptEntryDto'
+
+paths:
+  /api/v1/auth/login:
+    post:
+      tags: ["Contract 1: Auth & Therapist (Team 1)"]
+      summary: Authenticate therapist and return JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /api/v1/therapists/me:
+    get:
+      tags: ["Contract 1: Auth & Therapist (Team 1)"]
+      summary: Get current authenticated therapist profile
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Therapist profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TherapistProfileDto'
+
+  /api/v1/patients:
+    get:
+      tags: ["Contract 1: Patients CRUD (Team 1)"]
+      summary: List all patients belonging to the authenticated therapist
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: List of patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientDto'
+    post:
+      tags: ["Contract 1: Patients CRUD (Team 1)"]
+      summary: Create a new encrypted patient record
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientDto'
+      responses:
+        '201':
+          description: Patient created
+
+  /api/v1/patients/{patientId}:
+    get:
+      tags: ["Contract 1: Patients CRUD (Team 1)"]
+      summary: Get full patient card by ID
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Full patient card
+    put:
+      tags: ["Contract 1: Patients CRUD (Team 1)"]
+      summary: Update patient card and ongoing therapist notes
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientDto'
+      responses:
+        '200':
+          description: Updated patient card
+
+  /api/v1/characters:
+    get:
+      tags: ["Contract 1: Character Catalog (Team 1)"]
+      summary: List all 3D characters and their predefined animation triggers
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Character catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacterDto'
+
+  /api/v1/sessions:
+    post:
+      tags: ["Contract 1: Therapy Sessions (Team 1)"]
+      summary: Create a new therapy session with goals, focus topics, and sensitive boundaries
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionCreateRequestDto'
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponseDto'
+
+  /api/v1/patients/{patientId}/sessions:
+    get:
+      tags: ["Contract 1: Therapy Sessions (Team 1)"]
+      summary: Get chronological session history for a patient
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: patientId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Chronological list of sessions
+
+  /api/v1/sessions/{sessionId}:
+    get:
+      tags: ["Contract 1: Therapy Sessions (Team 1)"]
+      summary: Get full session details including word-for-word transcript and therapist notes
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Full session details and transcript
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponseDto'
+
+  /api/v1/sessions/{sessionId}/notes:
+    patch:
+      tags: ["Contract 1: Therapy Sessions (Team 1)"]
+      summary: Update manual therapist notes for a session
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                therapistSessionNotes: { type: string }
+      responses:
+        '200':
+          description: Notes updated
+
+  /internal/api/v1/sessions/{sessionId}/context:
+    get:
+      tags: ["Contract 5: Internal AI & Orchestrator API (Teams 3 & 5)"]
+      summary: Fetch anonymized session context, character personality, and animation triggers at session start
+      security: [{ internalServiceKey: [] }]
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Unified session context (stripped of PII)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionAiContextResponseDto'
+
+  /internal/api/v1/sessions/{sessionId}/complete:
+    post:
+      tags: ["Contract 5: Internal AI & Orchestrator API (Teams 3 & 5)"]
+      summary: Archive completed session duration and full word-for-word transcript
+      security: [{ internalServiceKey: [] }]
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionCompleteRequestDto'
+      responses:
+        '200':
+          description: Session completed and transcript encrypted at rest
