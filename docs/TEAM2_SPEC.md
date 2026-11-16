@@ -349,8 +349,9 @@ erDiagram
 
 | תחום אחריות | חברי צוות מוצעים | תכולת משימות מרכזית |
 | :--- | :--- | :--- |
-| **1. ניהול, אינטגרציה ושכבת ה-Controllers & Services (חוזה 1 + חוזה 5)** | **יוסי גלר (מנהל צוות)** + **אליה גבאי** | • הקמת פרויקט SpringBoot והגדרת Swagger/OpenAPI.<br>• מימוש `SessionController` ו-`InternalSessionController` (שליפת Context מותמם ל-AI ושמירת פרוטוקול שיחה).<br>• מימוש `PatientController` ו-`CharacterController`.<br>• תיאום חוזים מול צוותים 1, 3 ו-5. |
-| **2. תכנון סכמת מסד הנתונים ומימוש ישויות ה-Hibernate (JPA)** | **משה אנידג'ר** + **אוהד סבג** | • תכנון הטבלאות והקשרים ב-PostgreSQL.<br>• כתיבת ה-Entities (`Therapist`, `Patient`, `Character`, `AnimationTrigger`, `TherapySession`, `TranscriptEntry`).<br>• כתיבת ה-Repositories וה-Data Seeder לקטלוג הדמויות ומזהי האנימציות (`Animation IDs`). |
+| **ניהול צוות, ארכיטקטורה, חוזי API ו-Code Review (ראש צוות)** | **יוסי גלר (מנהל צוות)** | • הובלת הארכיטקטורה, הקמת תשתית הפרויקט והגדרת הסוכנים (`AGENTS.md`).<br>• סגירת ותיאום חוזי ה-API (חוזה 1 וחוזה 5) מול ראשי צוותים 1, 3, 4 ו-5.<br>• ניהול ה-Issues, מעבר ואישור Pull Requests (Code Review) ואינטגרציה מערכתית. |
+| **1. שכבת ה-Controllers & Services (חוזה 1 + חוזה 5)** | **אליה גבאי** + **אוהד סבג** | • מימוש `PatientController`, `CharacterController` ו-`SessionController` מול צוות 1 (אליה).<br>• מימוש `InternalSessionController` לשליפת Context מותמם ל-AI ושמירת פרוטוקול שיחה מול צוותים 3 ו-5 (אוהד). |
+| **2. תכנון סכמת מסד הנתונים ומימוש ישויות ה-Hibernate (JPA)** | **משה אנידג'ר** + **אוהד סבג** | • תכנון הטבלאות והקשרים ב-PostgreSQL.<br>• כתיבת ה-Entities (`Therapist`, `Patient`, `TherapySession`, `TranscriptEntry`) וה-Repositories (משה).<br>• ישויות `CharacterEntity` ו-`AnimationTrigger` + ה-Data Seeder לקטלוג הדמויות (אוהד). |
 | **3. שכבת האבטחה, ההצפנה והאימות (Spring Security / JWT)** | **איתמר אהרונוב** | • הגדרת Spring Security, הפקת ואימות JWT למטפלים (`AuthController`), ואימות מפתח פנימי (`X-Internal-Service-Key`) מול צוותים 3 ו-5.<br>• פיתוח `CryptoAttributeConverter` (AES-256) להצפנת השדות הרגישים ב-DB.<br>• מימוש Audit Log לתיעוד גישה לתיקי מטופלים. |
 
 ---

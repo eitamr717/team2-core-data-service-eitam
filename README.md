@@ -2,12 +2,12 @@
 
 ברוכים הבאים ל-Repository הרשמי של **צוות 2 – באקנד נתונים וקריאות** בפרויקט **פלטפורמה לסיוע בטיפול רגשי בילדים באמצעות דמות אנימציה אינטראקטיבית**.
 
-### 👥 חברי הצוות
-* **יוסי גלר** (`@yossi-turing`) – מנהל צוות
-* **איתמר אהרונוב** (`@eitamr717`)
-* **אוהד סבג** (`@ohadjobs2`)
-* **אליה גבאי** (`@EliaGabay`)
-* **משה אנידג'ר**
+### 👥 מבנה הצוות
+* **יוסי גלר** (`@yossi-turing`) – **ראש צוות (Team Lead):** ארכיטקטורה, ניהול חוזי API מול צוותים 1/3/4/5, ניהול משימות, Code Review ומיזוג Pull Requests, ואינטגרציה מערכתית.
+* **איתמר אהרונוב** (`@eitamr717`) – אבטחת מידע, הצפנת שדות (AES-256-GCM), Audit Log ו-Spring Security / JWT.
+* **משה אנידג'ר** – שכבת הנתונים וישויות Hibernate (מטפלים, מטופלים, סשנים ופרוטוקול שיחה).
+* **אוהד סבג** (`@ohadjobs2`) – קטלוג דמויות ואנימציות (Entities + Data Seeder) וממשק ה-Internal API מול צוותים 3 ו-5 (חוזה 5).
+* **אליה גבאי** (`@EliaGabay`) – ממשקי ה-REST API מול פרונט המטפל של צוות 1 (חוזה 1: מטופלים, דמויות, סשנים והיסטוריה).
 
 ---
 
@@ -80,21 +80,22 @@ src/main/java/com/therapy/coredataservice/
 
 ---
 
-## 📋 5. חלוקת המשימות בצוות (GitHub Issues)
+## 📋 5. חלוקת המשימות לצוות הפיתוח (GitHub Issues)
 
-פירוט מלא של כל משימה והקבצים שלה מופיע ב-**[`docs/ISSUES_TASKS.md`](docs/ISSUES_TASKS.md)** ובלשונית ה-**Issues** ב-GitHub:
+פירוט מלא של כל משימה והקבצים שלה מופיע ב-**[`docs/ISSUES_TASKS.md`](docs/ISSUES_TASKS.md)** ובלשונית ה-**Issues** ב-GitHub.  
+**ראש הצוות (יוסי גלר `@yossi-turing`)** מוביל את הארכיטקטורה, סגירת החוזים מול הצוותים האחרים, מעבר ובדיקת הקוד (**Code Review / PR Approval**) ואינטגרציה מלאה בין השכבות.
 
-| מס' Issue | משימה | ענף (Branch) | אחראי מומלץ |
+| מס' Issue | משימה | ענף (Branch) | מפתח אחראי |
 | :--- | :--- | :--- | :--- |
 | **[Issue #1](../../issues/1)** | תשתית הצפנת שדות ב-DB (AES-256-GCM) ו-Audit Log | `feat/issue-1-crypto-and-audit` | **איתמר אהרונוב** (`@eitamr717`) |
 | **[Issue #2](../../issues/2)** | אבטחה, התחברות מטפל (JWT) ואימות מפתח פנימי (Spring Security) | `feat/issue-2-security-jwt` | **איתמר אהרונוב** (`@eitamr717`) |
 | **[Issue #3](../../issues/3)** | ישויות Hibernate ו-Repositories עבור מטפלים ומטופלים | `feat/issue-3-patient-entities` | **משה אנידג'ר** |
 | **[Issue #4](../../issues/4)** | ישויות Hibernate, Repositories ו-Data Seeder עבור קטלוג דמויות ואנימציות | `feat/issue-4-character-catalog-entities` | **אוהד סבג** (`@ohadjobs2`) |
-| **[Issue #5](../../issues/5)** | ישויות Hibernate ו-Repositories עבור סשנים ופרוטוקול שיחה (Transcript) | `feat/issue-5-session-transcript-entities` | **אוהד סבג** (`@ohadjobs2`) / **משה אנידג'ר** |
+| **[Issue #5](../../issues/5)** | ישויות Hibernate ו-Repositories עבור סשנים ופרוטוקול שיחה (Transcript) | `feat/issue-5-session-transcript-entities` | **משה אנידג'ר** |
 | **[Issue #6](../../issues/6)** | מימוש REST API לניהול כרטיסי מטופלים (חוזה 1 מול צוות 1) | `feat/issue-6-patient-crud-api` | **אליה גבאי** (`@EliaGabay`) |
 | **[Issue #7](../../issues/7)** | מימוש REST API לקטלוג הדמויות והאנימציות (חוזה 1 מול צוות 1) | `feat/issue-7-character-catalog-api` | **אליה גבאי** (`@EliaGabay`) |
-| **[Issue #8](../../issues/8)** | מימוש REST API לפתיחת סשן והיסטוריית מפגשים למטפל (חוזה 1 מול צוות 1) | `feat/issue-8-therapist-sessions-api` | **יוסי גלר** (`@yossi-turing`) |
-| **[Issue #9](../../issues/9)** | מימוש Internal REST API מול צוות 3 וצוות 5 – שליפת Context ושמירת פרוטוקול (חוזה 5) | `feat/issue-9-internal-ai-orchestrator-api` | **יוסי גלר** (`@yossi-turing`) |
+| **[Issue #8](../../issues/8)** | מימוש REST API לפתיחת סשן והיסטוריית מפגשים למטפל (חוזה 1 מול צוות 1) | `feat/issue-8-therapist-sessions-api` | **אליה גבאי** (`@EliaGabay`) |
+| **[Issue #9](../../issues/9)** | מימוש Internal REST API מול צוות 3 וצוות 5 – שליפת Context ושמירת פרוטוקול (חוזה 5) | `feat/issue-9-internal-ai-orchestrator-api` | **אוהד סבג** (`@ohadjobs2`) |
 
 ---
 
@@ -123,4 +124,4 @@ src/main/java/com/therapy/coredataservice/
    docker compose up -d
    mvn clean test
    ```
-5. פתחו **Pull Request (PR)** לענף `main` עם קישור ל-Issue (`Closes #X`) לבדיקה של יוסי.
+5. פתחו **Pull Request (PR)** לענף `main` עם קישור ל-Issue (`Closes #X`) לבדיקה ואישור של ראש הצוות (**יוסי גלר**).
